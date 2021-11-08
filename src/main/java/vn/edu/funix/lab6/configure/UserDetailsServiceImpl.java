@@ -23,15 +23,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        Optional<vn.edu.funix.lab6.entity.User> user = this.userRepository.findByUserName(userName);
+        Optional<vn.edu.funix.lab6.entity.User> appUser = this.userRepository.findByUserName(userName);
 
-        if (!user.isPresent()) {
-            System.out.println("User not found! " + userName);
+        if (!appUser.isPresent()) {
             throw new UsernameNotFoundException("User " + userName + " was not found in the database");
         } else {
-            System.out.println("Found User: " + user);
-
-            if (user.get().isLocked()) {
+            if (appUser.get().isLocked()) {
                 throw new LockedException("User " + userName + " has been locked!");
             }
 
@@ -40,7 +37,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
             grantList.add(authority);
 
-            return new User(user.get().getUserName(), user.get().getEncrytedPassword(), grantList);
+            return new User(appUser.get().getUserName(), appUser.get().getEncrytedPassword(), grantList);
         }
     }
 
