@@ -3,7 +3,11 @@ package vn.edu.funix.lab6.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
+import vn.edu.funix.lab6.entity.User;
 import vn.edu.funix.lab6.repository.UserRepository;
+
+import javax.swing.text.html.Option;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -30,4 +34,23 @@ public class UserService {
             }
         });
     }
+
+    public void resetFailureLogin(String userName) {
+        userRepository.findByUserName(userName).ifPresent(user -> {
+            if (user.getFailureLoginTemp() > 0) {
+                user.setFailureLoginTemp(0);
+                userRepository.save(user);
+            }
+        });
+    }
+
+    public Optional<User> findByUserName(String userName) {
+        return userRepository.findByUserName(userName);
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+
 }
