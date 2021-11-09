@@ -2,11 +2,12 @@ package vn.edu.funix.lab6.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import vn.edu.funix.lab6.entity.User;
 import vn.edu.funix.lab6.repository.UserRepository;
+import vn.edu.funix.lab6.utils.AppUtils;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -14,7 +15,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private static final String LOGIN_FAILED_MESSAGE = "User %s login failed. You have %s times to try again.";
+    private static final String LOGIN_FAILED_MESSAGE = "Invalid User ID/Password. Number of attempts left %s";
     private static final String LOGIN_FAILED_AND_LOCKED_MESSAGE = "Too many failed login attempts, login temporarily disabled. Please contact with administrator.";
 
     public void updateLoginFailed(String userName) {
@@ -24,7 +25,7 @@ public class UserService {
                 attempt++;
                 user.setFailureLoginTemp(attempt);
                 userRepository.save(user);
-                String error = String.format(LOGIN_FAILED_MESSAGE, userName, 3 - attempt);
+                String error = String.format(LOGIN_FAILED_MESSAGE, 3 - attempt);
                 throw new BadCredentialsException(error);
             } else {
                 user.setFailureLoginTemp(3);
@@ -42,6 +43,23 @@ public class UserService {
                 userRepository.save(user);
             }
         });
+    }
+
+    public void saveNewPassword(String userName, String oldPassword, String newPassword, String confirmPassword) {
+        if (oldPassword == null || oldPassword.length() != 8
+            || newPassword == null || newPassword.length() != 8
+            || !newPassword.equals(confirmPassword))  {
+            return;
+        } else {
+            userRepository.findByUserName(userName).ifPresent(user -> {
+                String hashOldPassword = user.getEncrytedPassword();
+                if (BCrypt.checkpw(oldPassword, hashOldPassword)) {
+                    user.setEncrytedPassword(AppUtils.encryptPassword(newPassword));
+                    user.setFirstLogin(false);
+                    userRepository.save(user);
+                }
+            });
+        }
     }
 
     public Optional<User> findByUserName(String userName) {
