@@ -5,8 +5,8 @@ VALUES
 (false ,'$2a$04$ELMHx7R3uRBIRn5D.AZ1JOHXDztkVVYAp8EW58SgQgGgkMmMXpJ6i' ,0,true,1234567891111111);
 
 
-INSERT INTO TBL_HINT_QUESTION(CONTENT,DISPLAY_ORDER,IS_DELETED)
+INSERT INTO TBL_HINT_QUESTION(CONTENT)
 VALUES
-('What is your nick name?' ,1 ,false),
-('What is your first school name?' ,2 ,false),
-('What is your first pet name?',3 ,false);
+('What is your nick name?'),
+('What is your first school name?'),
+('What is your first pet name?');

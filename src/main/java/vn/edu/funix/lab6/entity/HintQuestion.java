@@ -19,11 +19,4 @@ public class HintQuestion {
 
     @Column(name = "CONTENT", length = 256, nullable = false)
     private String content;
-
-    @Column(name = "DISPLAY_ORDER", nullable = false)
-    private int displayOrder;
-
-    @Column(name = "IS_DELETED", length = 1, nullable = false)
-    private boolean isDeleted;
-
 }

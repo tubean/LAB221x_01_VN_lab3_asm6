@@ -14,24 +14,91 @@
 
             <div class="form-group">
                 <h2>First Time Login</h2>
-                <label class=""><span style="color: red; "><b>*</b></span> Please answer at least one (1) of the hint
-                    question below. Maximum selection is three (3) questions.</label>
+                <form name='f' data-th-action="@{/action/submitFirstLogin}" th:object="${requestForm}" method='POST'>
+                    <label class=""><span style="color: red; "><b>*</b></span> Please answer at least one (1) of the hint
+                        question below. Maximum selection is three (3) questions.</label>
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <select th:field="*{hintQuestionId1}" style="width: 170px; height: 30px">
+                                    <option value=""> -Select Hint Question-</option>
+                                    <option th:each="key : ${hintQuestions.keySet()}"
+                                            th:value="${key}"
+                                            th:utext="${hintQuestions.get(key).getContent()}">
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" style="width: 200px; height: 30px" th:field="*{answer1}">
+                            </td>
+                        </tr>
 
-                <select class="form-control" name="occupation1" onchange="CheckOccupation(this.value);">
-                    <option> Select Occupation</option>
-                    <option value="Lawyer"> Lawyer</option>
-                    <option value="Nurse"> Nurse</option>
-                    <option value="Lawyer"> Lawyer</option>
-                    <option value="Teacher"> Teacher</option>
-                    <option value="Programmer"> Programmer</option>
-                    <option value="Accountant"> Accountant</option>
-                    <option value="Other"> Other</option>
-                </select>
+                        <tr>
+                            <td>
+                                <select th:field="*{hintQuestionId2}" style="width: 170px; height: 30px">
+                                    <option value=""> -Select Hint Question-</option>
+                                    <option th:each="key : ${hintQuestions.keySet()}"
+                                            th:value="${key}"
+                                            th:utext="${hintQuestions.get(key).getContent()}">
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" style="width: 200px; height: 30px" th:field="*{answer2}">
+                            </td>
+                        </tr>
 
-                <div class="col-sm-5">
-                    <input type="text" name="occupation2" id="occupation" class="form-control"
-                           placeholder="please specify your occupation..." style="display:none;">
-                </div>
+                        <tr>
+                            <td>
+                                <select th:field="*{hintQuestionId3}" style="width: 170px; height: 30px">
+                                    <option value=""> -Select Hint Question-</option>
+                                    <option th:each="key : ${hintQuestions.keySet()}"
+                                            th:value="${key}"
+                                            th:utext="${hintQuestions.get(key).getContent()}">
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" style="width: 200px; height: 30px" th:field="*{answer3}">
+                            </td>
+                        </tr>
+                    </table>
+                    <label class=""><span style="color: red; "><b>*</b></span> Please key in your old password and new password.
+                        The new password must be different from the old password.</label>
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <label> Old Password</label>
+                            </td>
+                            <td>
+                                <input type="text" style="width: 200px; height: 30px" th:field="*{oldPassword}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label> New Password</label>
+                            </td>
+                            <td>
+                                <input type="text" style="width: 200px; height: 30px" th:field="*{newPassword}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label> Confirm New Password</label>
+                            </td>
+                            <td>
+                                <input type="text" style="width: 200px; height: 30px" th:field="*{confirmPassword}">
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div>
+                        <td><input name="submit" type="submit" value="submit"/></td>
+                        <td><button style="margin: 10px" name="cancel" value="cancel">cancel</button></td>
+                        <td><button name="clear" value="clear">clear</button></td>
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>

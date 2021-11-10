@@ -13,9 +13,7 @@ CREATE TABLE TBL_USER (
 
 CREATE TABLE TBL_HINT_QUESTION (
                           ID INT AUTO_INCREMENT PRIMARY KEY ,
-                          CONTENT VARCHAR(256) NOT NULL,
-                          DISPLAY_ORDER INT NULL,
-                          IS_DELETED TINYINT NOT NULL
+                          CONTENT VARCHAR(256) NOT NULL
 );
 
 CREATE TABLE TBL_HINT_QUESTION_CHOICE (

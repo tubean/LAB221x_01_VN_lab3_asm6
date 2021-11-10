@@ -15,7 +15,10 @@ import vn.edu.funix.lab6.utils.AppUtils;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 public class MainController {
@@ -45,8 +48,11 @@ public class MainController {
 				userService.saveUser(user.get());
 
 				if (user.get().isFirstLogin()) {
-					List<HintQuestion> hintQuestions = hintQuestionService.findAllHintQuestion();
-					model.addAllAttributes(hintQuestions);
+					Map<Long, HintQuestion> hintQuestions = hintQuestionService.findAllHintQuestion()
+							.stream().collect(Collectors.toMap(HintQuestion::getQuestionId, Function.identity()));
+					FirstLoginPageRequestModel loginPageRequestModel = new FirstLoginPageRequestModel();
+					model.addAttribute("requestForm", loginPageRequestModel);
+					model.addAttribute("hintQuestions", hintQuestions);
 					return "firstEntryPage";
 				} else return "redirect:/welcome";
 			}
