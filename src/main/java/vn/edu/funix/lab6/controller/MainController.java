@@ -5,8 +5,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import vn.edu.funix.lab6.entity.HintQuestion;
 import vn.edu.funix.lab6.model.FirstLoginPageRequestModel;
 import vn.edu.funix.lab6.service.HintQuestionService;
@@ -14,7 +14,6 @@ import vn.edu.funix.lab6.service.UserService;
 import vn.edu.funix.lab6.utils.AppUtils;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -29,16 +28,21 @@ public class MainController {
 
 	private static final String PAGE_403 = "403Page";
 
-	@RequestMapping(value = { "/", "/welcome", "login" }, method = RequestMethod.GET)
+	@GetMapping(value = { "/", "/welcome", "login" })
 	public String welcomePage(Model model, Principal principal) {
 		if (principal != null) {
+			String username = principal.getName();
+			Optional<vn.edu.funix.lab6.entity.User> user = userService.findByUserName(username);
+			if (user.isPresent() && user.get().isFirstLogin()) {
+				return "/firstEntryPage";
+			}
 			model.addAttribute("title", "Welcome");
 			model.addAttribute("message", "This is welcome page!");
 			return "homePage";
 		} else return "loginPage";
 	}
 
-	@RequestMapping(value = {"/firstEntryPage"}, method = RequestMethod.GET)
+	@GetMapping(value = {"/firstEntryPage"})
 	public String firstEntryPage(Model model, Principal principal) {
 		if (principal != null) {
 			String username = principal.getName();
@@ -60,8 +64,8 @@ public class MainController {
 		return PAGE_403;
 	}
 
-	@RequestMapping(value = {"/submitFirstLogin"}, method = RequestMethod.PUT)
-	public String submitFirstLogin(Model model, Principal principal, FirstLoginPageRequestModel requestModel) {
+	@PostMapping(value = {"/submitFirstLogin"})
+	public String submitFirstLogin(Principal principal, FirstLoginPageRequestModel requestModel) {
 		if (principal != null) {
 			String username = principal.getName();
 			Optional<vn.edu.funix.lab6.entity.User> user = userService.findByUserName(username);
@@ -71,7 +75,7 @@ public class MainController {
 				userService.saveNewPassword(username, requestModel.getOldPassword(), requestModel.getNewPassword(), requestModel.getConfirmPassword());
 				// update answer
 				hintQuestionService.saveHintQuestionChoice(requestModel, user.get());
-				return "redirect:/logoutSuccessful";
+				return "redirect:/logout";
 				} catch (Exception e) {
 					return "firstEntryPage";
 				}
@@ -80,28 +84,17 @@ public class MainController {
 		return PAGE_403;
 	}
 
-	@RequestMapping(value = "/logoutSuccessful", method = RequestMethod.GET)
-	public String logoutSuccessfulPage(Model model) {
-		model.addAttribute("title", "Logout");
-		return "logoutPage";
-	}
-
-	@RequestMapping(value = "/403", method = RequestMethod.GET)
+	@GetMapping(value = "/403")
 	public String accessDenied(Model model, Principal principal) {
 
 		if (principal != null) {
-			User loginedUser = (User) ((Authentication) principal).getPrincipal();
-
-			String userInfo = AppUtils.toString(loginedUser);
-
+			User loginUser = (User) ((Authentication) principal).getPrincipal();
+			String userInfo = AppUtils.toString(loginUser);
 			model.addAttribute("userInfo", userInfo);
-
 			String message = "Hi " + principal.getName() //
 					+ "<br> You do not have permission to access this page!";
 			model.addAttribute("message", message);
-
 		}
-
 		return PAGE_403;
 	}
 

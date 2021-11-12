@@ -3,6 +3,7 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 <head>
     <title text="First Login Time"></title>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 </head>
 <body>
 
@@ -14,8 +15,15 @@
 
             <div class="form-group">
                 <h2>First Time Login</h2>
-                <form name='f' data-th-action="@{/action/submitFirstLogin}" th:object="${requestForm}" method='POST'>
-                    <label class=""><span style="color: red; "><b>*</b></span> Please answer at least one (1) of the hint
+
+                <div th:if="${#fields.hasErrors('global')}">
+                    <h3>Global errors:</h3>
+                    <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
+                </div>
+
+                <form th:action="@{/submitFirstLogin}" th:object="${requestForm}" method='post'>
+                    <label class=""><span style="color: red; "><b>*</b></span> Please answer at least one (1) of the
+                        hint
                         question below. Maximum selection is three (3) questions.</label>
                     <table class="table">
                         <tr>
@@ -29,7 +37,8 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="text" style="width: 200px; height: 30px" th:field="*{answer1}">
+                                <input type="text" id="answer1" style="width: 200px; height: 30px"
+                                       th:field="*{answer1}">
                             </td>
                         </tr>
 
@@ -44,7 +53,8 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="text" style="width: 200px; height: 30px" th:field="*{answer2}">
+                                <input type="text" id="answer2" style="width: 200px; height: 30px"
+                                       th:field="*{answer2}">
                             </td>
                         </tr>
 
@@ -59,11 +69,13 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="text" style="width: 200px; height: 30px" th:field="*{answer3}">
+                                <input type="text" id="answer3" style="width: 200px; height: 30px"
+                                       th:field="*{answer3}">
                             </td>
                         </tr>
                     </table>
-                    <label class=""><span style="color: red; "><b>*</b></span> Please key in your old password and new password.
+                    <label class=""><span style="color: red; "><b>*</b></span> Please key in your old password and new
+                        password.
                         The new password must be different from the old password.</label>
                     <table class="table">
                         <tr>
@@ -71,7 +83,8 @@
                                 <label> Old Password</label>
                             </td>
                             <td>
-                                <input type="text" style="width: 200px; height: 30px" th:field="*{oldPassword}">
+                                <input type="password" id="oldPassword" style="width: 200px; height: 30px"
+                                       th:field="*{oldPassword}">
                             </td>
                         </tr>
                         <tr>
@@ -79,7 +92,8 @@
                                 <label> New Password</label>
                             </td>
                             <td>
-                                <input type="text" style="width: 200px; height: 30px" th:field="*{newPassword}">
+                                <input type="password" id="newPassword" style="width: 200px; height: 30px"
+                                       th:field="*{newPassword}">
                             </td>
                         </tr>
                         <tr>
@@ -87,21 +101,37 @@
                                 <label> Confirm New Password</label>
                             </td>
                             <td>
-                                <input type="text" style="width: 200px; height: 30px" th:field="*{confirmPassword}">
+                                <input type="password" id="confirmPassword" style="width: 200px; height: 30px"
+                                       th:field="*{confirmPassword}">
                             </td>
                         </tr>
                     </table>
 
                     <div>
-                        <td><input name="submit" type="submit" value="submit"/></td>
-                        <td><button style="margin: 10px" name="cancel" value="cancel">cancel</button></td>
-                        <td><button name="clear" value="clear">clear</button></td>
+                        <td><input class="btn btn-default" name="submit" type="submit" value="submit"/></td>
+                        <td>
+                            <button class="btn btn-default" style="margin: 10px" th:href="@{/logout}">cancel</button>
+                        </td>
+                        <td><a class="btn btn-default" id="clearButton">clear</a></td>
                     </div>
                 </form>
 
             </div>
         </div>
     </div>
-
+</div>
 </body>
+
+<script type="application/javascript">
+    $(document).ready(function () {
+        $('#clearButton').on("click", function () {
+            $('#answer1').val("");
+            $('#answer2').val("");
+            $('#answer3').val("");
+            $('#oldPassword').val("");
+            $('#newPassword').val("");
+            $('#confirmPassword').val("");
+        });
+    })
+</script>
 </html>
