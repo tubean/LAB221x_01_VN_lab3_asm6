@@ -27,14 +27,16 @@ public class MainController {
 	private HintQuestionService hintQuestionService;
 
 	private static final String PAGE_403 = "403Page";
+	private static final String FIRST_ENTRY_PAGE = "firstEntryPage";
 
-	@GetMapping(value = { "/", "/welcome", "login" })
+	@GetMapping(value = { "/", "/welcome", "/login"})
 	public String welcomePage(Model model, Principal principal) {
 		if (principal != null) {
 			String username = principal.getName();
 			Optional<vn.edu.funix.lab6.entity.User> user = userService.findByUserName(username);
 			if (user.isPresent() && user.get().isFirstLogin()) {
-				return "/firstEntryPage";
+				updateForm(model, new FirstLoginPageRequestModel());
+				return FIRST_ENTRY_PAGE;
 			}
 			model.addAttribute("title", "Welcome");
 			model.addAttribute("message", "This is welcome page!");
@@ -52,12 +54,8 @@ public class MainController {
 				userService.saveUser(user.get());
 
 				if (user.get().isFirstLogin()) {
-					Map<Long, HintQuestion> hintQuestions = hintQuestionService.findAllHintQuestion()
-							.stream().collect(Collectors.toMap(HintQuestion::getQuestionId, Function.identity()));
-					FirstLoginPageRequestModel loginPageRequestModel = new FirstLoginPageRequestModel();
-					model.addAttribute("requestForm", loginPageRequestModel);
-					model.addAttribute("hintQuestions", hintQuestions);
-					return "firstEntryPage";
+					updateForm(model, new FirstLoginPageRequestModel());
+					return FIRST_ENTRY_PAGE;
 				} else return "redirect:/welcome";
 			}
 		}
@@ -65,19 +63,33 @@ public class MainController {
 	}
 
 	@PostMapping(value = {"/submitFirstLogin"})
-	public String submitFirstLogin(Principal principal, FirstLoginPageRequestModel requestModel) {
+	public String submitFirstLogin(Model model, Principal principal, FirstLoginPageRequestModel requestModel) {
 		if (principal != null) {
 			String username = principal.getName();
 			Optional<vn.edu.funix.lab6.entity.User> user = userService.findByUserName(username);
+			String error = requestModel.validateRequestModel();
 			if (user.isPresent()) {
 				try {
-				// update firstLogin
-				userService.saveNewPassword(username, requestModel.getOldPassword(), requestModel.getNewPassword(), requestModel.getConfirmPassword());
-				// update answer
-				hintQuestionService.saveHintQuestionChoice(requestModel, user.get());
-				return "redirect:/logout";
+					if (!error.equals("success")) {
+						updateForm(model, requestModel);
+						model.addAttribute("errorMessage", error);
+						return FIRST_ENTRY_PAGE;
+					}
+
+					// update firstLogin
+					String saveStatus = userService.saveNewPassword(username, requestModel.getOldPassword(), requestModel.getNewPassword());
+					if (!saveStatus.equals("success")) {
+						updateForm(model, requestModel);
+						model.addAttribute("errorMessage", saveStatus);
+						return FIRST_ENTRY_PAGE;
+					}
+					// update answer
+					hintQuestionService.saveHintQuestionChoice(requestModel, user.get());
+					return "redirect:/logout";
 				} catch (Exception e) {
-					return "firstEntryPage";
+					e.printStackTrace();
+					updateForm(model,requestModel);
+					return FIRST_ENTRY_PAGE;
 				}
 			}
 		}
@@ -96,6 +108,13 @@ public class MainController {
 			model.addAttribute("message", message);
 		}
 		return PAGE_403;
+	}
+
+	private void updateForm(Model model, FirstLoginPageRequestModel loginPageRequestModel) {
+		Map<Long, HintQuestion> hintQuestions = hintQuestionService.findAllHintQuestion()
+				.stream().collect(Collectors.toMap(HintQuestion::getQuestionId, Function.identity()));
+		model.addAttribute("requestForm", loginPageRequestModel);
+		model.addAttribute("hintQuestions", hintQuestions);
 	}
 
 }

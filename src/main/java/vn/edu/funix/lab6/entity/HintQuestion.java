@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class HintQuestion {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private long questionId;
 

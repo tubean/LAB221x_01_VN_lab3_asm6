@@ -45,20 +45,19 @@ public class UserService {
         });
     }
 
-    public void saveNewPassword(String userName, String oldPassword, String newPassword, String confirmPassword) {
-        if (oldPassword == null || oldPassword.length() != 8
-            || newPassword == null || newPassword.length() != 8
-            || !newPassword.equals(confirmPassword))  {
-            return;
+    public String saveNewPassword(String userName, String oldPassword, String newPassword) {
+        Optional<User> user = userRepository.findByUserName(userName);
+        if (user.isPresent()) {
+            User u = user.get();
+            String hashOldPassword = u.getEncrytedPassword();
+            if (BCrypt.checkpw(oldPassword, hashOldPassword)) {
+                u.setEncrytedPassword(AppUtils.encryptPassword(newPassword));
+                u.setFirstLogin(false);
+                userRepository.save(u);
+                return "success";
+            } return "wrong password";
         } else {
-            userRepository.findByUserName(userName).ifPresent(user -> {
-                String hashOldPassword = user.getEncrytedPassword();
-                if (BCrypt.checkpw(oldPassword, hashOldPassword)) {
-                    user.setEncrytedPassword(AppUtils.encryptPassword(newPassword));
-                    user.setFirstLogin(false);
-                    userRepository.save(user);
-                }
-            });
+            return "User not found!";
         }
     }
 

@@ -20,7 +20,7 @@ CREATE TABLE TBL_HINT_QUESTION_CHOICE (
                                    ID INT AUTO_INCREMENT PRIMARY KEY ,
                                    USER_ID VARCHAR(256) NOT NULL,
                                    QUESTION_ID INT NULL,
-                                   ANSWER TINYINT NOT NULL,
+                                   ANSWER VARCHAR(256) NOT NULL,
                                    foreign key (USER_ID) references TBL_USER(ID),
                                    foreign key (QUESTION_ID) references TBL_HINT_QUESTION(ID)
 );

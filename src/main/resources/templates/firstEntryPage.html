@@ -16,10 +16,7 @@
             <div class="form-group">
                 <h2>First Time Login</h2>
 
-                <div th:if="${#fields.hasErrors('global')}">
-                    <h3>Global errors:</h3>
-                    <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></p>
-                </div>
+                <span th:if="${errorMessage}"  th:text="${errorMessage}" style="color:red;margin:10px 0px;">Error</span>
 
                 <form th:action="@{/submitFirstLogin}" th:object="${requestForm}" method='post'>
                     <label class=""><span style="color: red; "><b>*</b></span> Please answer at least one (1) of the

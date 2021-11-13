@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class UserQuestionChoice {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private long userQuestionChoiceId;
 
