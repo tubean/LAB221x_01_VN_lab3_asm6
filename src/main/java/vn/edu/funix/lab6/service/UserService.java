@@ -18,6 +18,10 @@ public class UserService {
     private static final String LOGIN_FAILED_MESSAGE = "Invalid User ID/Password. Number of attempts left %s";
     private static final String LOGIN_FAILED_AND_LOCKED_MESSAGE = "Too many failed login attempts, login temporarily disabled. Please contact with administrator.";
 
+    /**
+     * update times of log in failed
+     * @param userName user Id
+     */
     public void updateLoginFailed(String userName) {
         userRepository.findByUserName(userName).ifPresent(user -> {
             int attempt = user.getFailureLoginTemp();
@@ -36,22 +40,20 @@ public class UserService {
         });
     }
 
-    public void resetFailureLogin(String userName) {
-        userRepository.findByUserName(userName).ifPresent(user -> {
-            if (user.getFailureLoginTemp() > 0) {
-                user.setFailureLoginTemp(0);
-                userRepository.save(user);
-            }
-        });
-    }
-
+    /**
+     * update new password for user
+     * @param userName user id
+     * @param oldPassword old password
+     * @param newPassword new password
+     * @return success or error message
+     */
     public String saveNewPassword(String userName, String oldPassword, String newPassword) {
         Optional<User> user = userRepository.findByUserName(userName);
         if (user.isPresent()) {
             User u = user.get();
-            String hashOldPassword = u.getEncrytedPassword();
+            String hashOldPassword = u.getEncryptedPassword();
             if (BCrypt.checkpw(oldPassword, hashOldPassword)) {
-                u.setEncrytedPassword(AppUtils.encryptPassword(newPassword));
+                u.setEncryptedPassword(AppUtils.encryptPassword(newPassword));
                 u.setFirstLogin(false);
                 userRepository.save(u);
                 return "success";
@@ -61,13 +63,20 @@ public class UserService {
         }
     }
 
+    /**
+     * find user by user id
+     * @param userName user id
+     * @return Optional User
+     */
     public Optional<User> findByUserName(String userName) {
         return userRepository.findByUserName(userName);
     }
 
+    /**
+     * save or update user
+     * @param user user
+     */
     public void saveUser(User user) {
         userRepository.save(user);
     }
-
-
 }

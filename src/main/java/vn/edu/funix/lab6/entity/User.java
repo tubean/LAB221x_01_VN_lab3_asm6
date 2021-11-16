@@ -19,7 +19,7 @@ public class User {
     private String userName;
 
     @Column(name = "PASSWORD", length = 128)
-    private String encrytedPassword;
+    private String encryptedPassword;
 
     @Column(name = "FIRST_LOGIN", length = 1, nullable = false)
     private boolean firstLogin;

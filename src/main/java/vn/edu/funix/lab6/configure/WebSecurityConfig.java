@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	private static final String LOGIN_URL = "/login";
+	private static final String LOGOUT_URL = "/logout";
 
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
@@ -24,8 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-		// Sét đặt dịch vụ để tìm kiếm User trong Database.
-		// Và sét đặt PasswordEncoder.
+		// set service finding user in database
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
 	}
@@ -35,26 +36,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http.headers().frameOptions().disable();
 
-		// Các trang không yêu cầu login
-		http.authorizeRequests().antMatchers("/", "/login", "/logout", "/h2-console").permitAll();
+		// page access without authentication
+		http.authorizeRequests().antMatchers("/", LOGIN_URL, LOGOUT_URL, "/h2-console").permitAll();
 
-		// Trang /userInfo yêu cầu phải login với vai trò ROLE_USER hoặc ROLE_ADMIN.
-		// Nếu chưa login, nó sẽ redirect tới trang /login.
+		// page access with authentication
 		http.authorizeRequests().antMatchers("/userInfo").access("hasAnyRole('ROLE_USER')");
 
 		http.authorizeRequests().and().exceptionHandling().accessDeniedPage("/403");
 
-		// Cấu hình cho Login Form.
+		// Configure for login form
 		http.authorizeRequests().and().formLogin()//
-				// Submit URL của trang login
+				// Submit form login
 				.loginProcessingUrl("/j_spring_security_check") // Submit URL
-				.loginPage("/login")//
+				.loginPage(LOGIN_URL)//
 				.defaultSuccessUrl("/firstEntryPage")//
 				.failureUrl("/login?error=true")//
 				.usernameParameter("username")//
 				.passwordParameter("password")
-				// Cấu hình cho Logout Page.
-				.and().logout().logoutUrl("/logout").logoutSuccessUrl("/login");
+				// Configure for Logout Page.
+				.and().logout().logoutUrl(LOGOUT_URL).logoutSuccessUrl(LOGIN_URL);
 
 	}
 

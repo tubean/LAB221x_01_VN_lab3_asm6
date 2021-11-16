@@ -12,6 +12,11 @@ import vn.edu.funix.lab6.utils.Strings;
 public class HandleLogInFailed implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
     @Autowired
     private UserService userService;
+
+    /**
+     * update login failed when use login with wrong password
+     * @param event event of login failed
+     */
     @Override
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
         String userName = event.getAuthentication().getPrincipal().toString();

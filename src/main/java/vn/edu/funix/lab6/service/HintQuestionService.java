@@ -19,6 +19,11 @@ public class HintQuestionService {
     @Autowired
     private UserQuestionChoiceRepository userQuestionChoiceRepository;
 
+    /**
+     * save security question
+     * @param model answer with question id
+     * @param user user
+     */
     public void saveHintQuestionChoice(FirstLoginPageRequestModel model, User user) {
         if (model.getHintQuestionId1() != null) {
             saveChoice(model.getHintQuestionId1(), Strings.nvl(model.getAnswer1()), user);
@@ -46,6 +51,10 @@ public class HintQuestionService {
         }
     }
 
+    /**
+     * find all security questions
+     * @return list of security questions
+     */
     public List<HintQuestion> findAllHintQuestion() {
         return hintQuestionRepository.findAll();
     }

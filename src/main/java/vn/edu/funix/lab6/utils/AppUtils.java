@@ -7,11 +7,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Collection;
 
 public class AppUtils {
+    /**
+     * encrypt password to bcrypt
+     * @param password raw password
+     * @return encrypted password
+     */
     public static String encryptPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
 
+    /**
+     * print user as string
+     * @param user user
+     * @return string of user
+     */
     public static String toString(User user) {
         StringBuilder sb = new StringBuilder();
 
